@@ -248,7 +248,19 @@ void exibeArranjoInteiros(int* arranjo, int n){
 void homofilia(Grafo* g, int v, int* valores) {
 
   /* COMPLETE/IMPLEMENTE ESTA FUNCAO */
+  int i, j, k;
 
+  for(int i = 0; i < g->numVertices; i++){
+    valores[i] = 0;
+  }
+
+  for(j = 0; j < g->numVertices; j++) {
+    for(k = 0; k < g->numVertices; k++) {
+      if(g->caracteristicas[v][k] != -1 && g->caracteristicas[v][k] == g->caracteristicas[j][k] ){
+        valores[j]++; 
+      }
+    } 
+  }
 }
 
 
