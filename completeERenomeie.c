@@ -269,7 +269,32 @@ void homofilia(Grafo* g, int v, int* valores) {
 void raridade(Grafo* g, int v, double* valores) {
 
   /* COMPLETE/IMPLEMENTE ESTA FUNCAO */
+  
+  int numCaracEmComum[5] = {0};
+  int i, j, k, z;
 
+  // INICIALIZA OS VALORES DO ARRAY VALORES
+  for(int i = 0; i < g->numVertices; i++){
+    valores[i] = 0.0;
+  }
+    
+  // Calcula a quantidade de vértices que possuem cada características de 1 a 5
+  for(i = 0; i < g->numVertices; i++) {
+    for(j = 0; j < g->numVertices; j++) {
+      if(g->caracteristicas[i][j] != -1) {
+        numCaracEmComum[g->caracteristicas[i][j] - 1]++;
+      }
+    }
+  }
+
+  // Calcula os valores conforme a raridade das características
+  for(j = 0; j < g->numVertices; j++) {
+    for(k = 0; k < g->numVertices; k++) {
+      if(g->caracteristicas[v][k] != -1 && g->caracteristicas[v][k] == g->caracteristicas[j][k]){
+        valores[j] += 1.0/numCaracEmComum[g->caracteristicas[j][k]-1]; 
+      }
+    } 
+  }  
 }
 
 /* Funcao que da mais pesos as caracteristicas mais presentes nos amigos 
