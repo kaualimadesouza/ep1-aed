@@ -28,10 +28,73 @@ typedef struct {
     int** caracteristicas;
 } Grafo;
 
+typedef struct auxNo{
+  int valor;
+  struct auxNo* prox;
+} No;
+
+typedef struct{
+  No* inicio;
+  No* fim;
+} Fila;
+  
+
+
 
 /* Funcao auxiliar para o sistema de correcao automatica (nao mexer) */
 void printf123(){
     // Funcao usada pelo sistema de correcao automatica (nao mexer)
+}
+
+/* Funções de Fila */
+void inicializaFila(Fila* f){
+  f->inicio = NULL;
+  f->fim = NULL;
+}
+
+bool filaVazia(Fila* f){
+  if (!f->inicio) return true;
+  return false;
+}
+
+void insereFila(Fila* f, int valor){
+  No* novo = (No*) malloc(sizeof(No));
+  novo->prox = NULL;
+  novo->valor = valor;
+  if (f->inicio == NULL){
+    f->inicio = novo;
+    f->fim = novo;
+  }else{
+    f->fim->prox = novo;
+    f->fim = novo;
+  }
+}
+
+int excluiFila(Fila* f){
+  if (!f->inicio) return -1;
+  No* atual = f->inicio;
+  int valor = atual->valor;
+  f->inicio = atual->prox;
+  if (!f->inicio) f->fim = NULL;
+  free(atual);
+  return valor;
+}
+
+void buscaEmLarguraEmProximidadeSocial(Grafo* g, int inicial, bool* visitado){
+  if (!g || inicial < 0 || inicial >= g->numVertices) return;
+  int x, atual;
+  Fila f ;
+  inicializaFila(&f) ;
+  insereFila(&f,inicial);
+  visitado[inicial] = true;
+  while(!filaVazia(&f) ){
+    atual = excluiFila(&f) ;
+    for (x=0;x<g->numVertices;x++)
+      if (!visitado[x] && g->matriz[atual][x]!=false){
+        insereFila(&f, x);
+        visitado[x] = true;
+      }
+  }
 }
 
 
@@ -300,9 +363,28 @@ void raridade(Grafo* g, int v, double* valores) {
 /* Funcao que da mais pesos as caracteristicas mais presentes nos amigos 
    do vertice v e calcula a influencia social entre o vertice v e os demais */
 void influenciaSocial(Grafo* g, int v, int* valores) {
+  int i, j, k;
 
-  /* COMPLETE/IMPLEMENTE ESTA FUNCAO */
+  for (i = 0; i < g->numVertices; i++) {
+      valores[i] = 0;
+  }
 
+  for (i = 0; i < g->numVertices; i++) {
+    for (k = 0; k < NUM_CARACT; k++) {
+      if (g->caracteristicas[i][k] == -1) {
+          continue;
+      }
+
+      int taxaInfluencia = 0;
+      for (j = 0; j < g->numVertices; j++) {
+          if (g->matriz[v][j] && g->caracteristicas[j][k] == g->caracteristicas[i][k]) {
+              taxaInfluencia++;
+          }
+      }
+
+      valores[i] += taxaInfluencia;
+      }
+  }
 }
 
 
@@ -311,15 +393,55 @@ void influenciaSocial(Grafo* g, int v, int* valores) {
 void amizadesEmComum(Grafo* g, int v, int* valores) {
 
   /* COMPLETE/IMPLEMENTE ESTA FUNCAO */
+  if (!g || v < 0 || v >= g->numVertices) return;
 
+  int i, j;
+  for(i = 0; i < g->numVertices; i++){
+    valores[i] = 0;
+  }
+
+  for(i = 0; i < g->numVertices; i++) {
+    for(j = 0; j < g->numVertices; j++) {
+      if(g->matriz[i][j] != 0 && g->matriz[i][j] == g->matriz[v][j] ) {
+        valores[i]++;
+      }
+    }
+  }
 }
 
 
 /* Funcao que calcula a distancia entre o vertice v e os demais */
 void proximidadeSocial(Grafo* g, int v, int* valores) {
+  if (!g || v < 0 || v >= g->numVertices) return;
 
-  /* COMPLETE/IMPLEMENTE ESTA FUNCAO */
+  int i;
+  for (i = 0; i < g->numVertices; i++) {
+      valores[i] = g->numVertices;
+  }
+  valores[v] = 0;
 
+  bool visitado[5];
+  for (i = 0; i < g->numVertices; i++) {
+      visitado[i] = false;
+  }
+
+  // Fila para a busca em largura
+  Fila f;
+  inicializaFila(&f);
+  insereFila(&f, v);
+  visitado[v] = true;
+
+  while (!filaVazia(&f)) {
+      int atual = excluiFila(&f);
+
+      for (i = 0; i < g->numVertices; i++) {
+          if (g->matriz[atual][i] && !visitado[i]) {
+              valores[i] = valores[atual] + 1; // Atualiza a distância
+              visitado[i] = true;
+              insereFila(&f, i);
+          }
+      }
+  }
 }
 
 
@@ -328,7 +450,19 @@ void proximidadeSocial(Grafo* g, int v, int* valores) {
 void conexaoPreferencial(Grafo* g, int v, int* valores) {
 
   /* COMPLETE/IMPLEMENTE ESTA FUNCAO */
+  if (!g || v < 0 || v >= g->numVertices) return;
+  int i, j;
+  for(i = 0; i < g->numVertices; i++){
+    valores[i] = 0;
+  }
 
+  for(i = 0; i < g->numVertices; i++) {
+    for(j = 0; j < g->numVertices; j++) {
+      if(g->matriz[i][j] != 0) {
+        valores[i]++;
+      }
+    }
+  }
 }
 
 
