@@ -5,7 +5,7 @@
 /**                                                                 **/
 /**   Primeiro Exercicio-Programa                                   **/
 /**                                                                 **/
-/**   <nome do(a) aluno(a)>                   <numero USP>          **/
+/**   <Kauã Lima de Souza>                   <15674702>             **/
 /**                                                                 **/
 /*********************************************************************/
 
@@ -329,7 +329,6 @@ void homofilia(Grafo* g, int v, int* valores) {
   }
 }
 
-
 /* Funcao que pondera as caracteristicas comuns entre o vertice v e os demais
    de acordo com sua raridade. */
 void raridade(Grafo* g, int v, double* valores) {
@@ -424,13 +423,13 @@ void proximidadeSocial(Grafo* g, int v, int* valores) {
   if (!g || v < 0 || v >= g->numVertices) return;
 
   int i;
-  // INICIALIZA OS VALORES DO ARRAY VALORES COM OUTROS VALORES DESSA VEZ
+  // INICIALIZA OS VALORES DO ARRAY VALORES COM OUTROS VALORES DESSA VEZ A FIM DE 
   for (i = 0; i < g->numVertices; i++) {
-    valores[i] = 0;
+    valores[i] = g->numVertices;
   }
   valores[v] = 0;
 
-  bool visitado[5];
+  bool visitado[g->numVertices];
   // INICIALIZA O VETOR visitado[]
   for (i = 0; i < g->numVertices; i++) {
     visitado[i] = false;
