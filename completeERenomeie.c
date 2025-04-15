@@ -311,12 +311,15 @@ void exibeArranjoInteiros(int* arranjo, int n){
 void homofilia(Grafo* g, int v, int* valores) {
 
   /* COMPLETE/IMPLEMENTE ESTA FUNCAO */
+  if(!g || v < 0 || v >= g->numVertices) return;
   int i, j, k;
 
+  // INICIALIZA OS VALORES DO ARRAY VALORES
   for(int i = 0; i < g->numVertices; i++){
     valores[i] = 0;
   }
 
+  // Laços para calcular a homofilia baseado nas características
   for(j = 0; j < g->numVertices; j++) {
     for(k = 0; k < g->numVertices; k++) {
       if(g->caracteristicas[v][k] != -1 && g->caracteristicas[v][k] == g->caracteristicas[j][k] ){
@@ -332,7 +335,8 @@ void homofilia(Grafo* g, int v, int* valores) {
 void raridade(Grafo* g, int v, double* valores) {
 
   /* COMPLETE/IMPLEMENTE ESTA FUNCAO */
-  
+  if(!g || v < 0 || v >= g->numVertices) return;
+
   int numCaracEmComum[5] = {0};
   int i, j, k, z;
 
@@ -341,7 +345,7 @@ void raridade(Grafo* g, int v, double* valores) {
     valores[i] = 0.0;
   }
     
-  // Calcula a quantidade de vértices que possuem cada características de 1 a 5
+  // Calcula a quantidade de vértices que possuem cada características de 1 a 5 e insere isso em um array
   for(i = 0; i < g->numVertices; i++) {
     for(j = 0; j < g->numVertices; j++) {
       if(g->caracteristicas[i][j] != -1) {
@@ -350,7 +354,7 @@ void raridade(Grafo* g, int v, double* valores) {
     }
   }
 
-  // Calcula os valores conforme a raridade das características
+  // Calcula os valores conforme a raridade das características | Pega o valor numeroe de caracteristica em comum  em numCaracEmComum e vai incrementando em valores[] até ter todas as raridades ponderadas
   for(j = 0; j < g->numVertices; j++) {
     for(k = 0; k < g->numVertices; k++) {
       if(g->caracteristicas[v][k] != -1 && g->caracteristicas[v][k] == g->caracteristicas[j][k]){
@@ -363,30 +367,32 @@ void raridade(Grafo* g, int v, double* valores) {
 /* Funcao que da mais pesos as caracteristicas mais presentes nos amigos 
    do vertice v e calcula a influencia social entre o vertice v e os demais */
 void influenciaSocial(Grafo* g, int v, int* valores) {
+  if(!g || v < 0 || v >= g->numVertices) return;
   int i, j, k;
 
+  // INICIALIZA OS VALORES DO ARRAY VALORES
   for (i = 0; i < g->numVertices; i++) {
       valores[i] = 0;
   }
 
   for (i = 0; i < g->numVertices; i++) {
-    for (k = 0; k < NUM_CARACT; k++) {
+    for (k = 0; k < g->numVertices; k++) {
       if (g->caracteristicas[i][k] == -1) {
-          continue;
+        continue;
       }
 
       int taxaInfluencia = 0;
+      // Trava o valor da caracteristica em g->caracteristicas[i][k] e compara com demais da coluna, se for igual ele soma na taxaInfluencia
       for (j = 0; j < g->numVertices; j++) {
-          if (g->matriz[v][j] && g->caracteristicas[j][k] == g->caracteristicas[i][k]) {
-              taxaInfluencia++;
-          }
+        if (g->matriz[v][j] && g->caracteristicas[j][k] == g->caracteristicas[i][k]) {
+          taxaInfluencia++;
+        }
       }
 
       valores[i] += taxaInfluencia;
-      }
+    }
   }
 }
-
 
 /* Funcao que calcula o numero de amigos em comum entre o vertice v 
    e os demais */
@@ -396,10 +402,12 @@ void amizadesEmComum(Grafo* g, int v, int* valores) {
   if (!g || v < 0 || v >= g->numVertices) return;
 
   int i, j;
+  // INICIALIZA OS VALORES DO ARRAY VALORES
   for(i = 0; i < g->numVertices; i++){
     valores[i] = 0;
   }
 
+  // Laços para calcular o número de amigos em comum entre o vertice v e os demais
   for(i = 0; i < g->numVertices; i++) {
     for(j = 0; j < g->numVertices; j++) {
       if(g->matriz[i][j] != 0 && g->matriz[i][j] == g->matriz[v][j] ) {
@@ -409,20 +417,23 @@ void amizadesEmComum(Grafo* g, int v, int* valores) {
   }
 }
 
-
 /* Funcao que calcula a distancia entre o vertice v e os demais */
 void proximidadeSocial(Grafo* g, int v, int* valores) {
+  
+  /* COMPLETE/IMPLEMENTE ESTA FUNCAO */
   if (!g || v < 0 || v >= g->numVertices) return;
 
   int i;
+  // INICIALIZA OS VALORES DO ARRAY VALORES COM OUTROS VALORES DESSA VEZ
   for (i = 0; i < g->numVertices; i++) {
-      valores[i] = g->numVertices;
+    valores[i] = 0;
   }
   valores[v] = 0;
 
   bool visitado[5];
+  // INICIALIZA O VETOR visitado[]
   for (i = 0; i < g->numVertices; i++) {
-      visitado[i] = false;
+    visitado[i] = false;
   }
 
   // Fila para a busca em largura
@@ -431,16 +442,19 @@ void proximidadeSocial(Grafo* g, int v, int* valores) {
   insereFila(&f, v);
   visitado[v] = true;
 
+  // While e for para busca e largura, se a fila nao estiver vazia quer dizer que ainda tem vertices para visitar
+  // Ele então entra e traz o vertice atual, depois entre no for para visitar os seus vizinhos e inserir eles na fila
+  // Esse processo acontece para todo vertice que tiver vizinho e quando a fila estiver vazia o programa termina.
   while (!filaVazia(&f)) {
-      int atual = excluiFila(&f);
+    int atual = excluiFila(&f);
 
-      for (i = 0; i < g->numVertices; i++) {
-          if (g->matriz[atual][i] && !visitado[i]) {
-              valores[i] = valores[atual] + 1; // Atualiza a distância
-              visitado[i] = true;
-              insereFila(&f, i);
-          }
+    for (i = 0; i < g->numVertices; i++) {
+      if (g->matriz[atual][i] && !visitado[i]) {
+        valores[i] = valores[atual] + 1; // Atualiza a distância
+        visitado[i] = true;
+        insereFila(&f, i);
       }
+    }
   }
 }
 
@@ -452,10 +466,15 @@ void conexaoPreferencial(Grafo* g, int v, int* valores) {
   /* COMPLETE/IMPLEMENTE ESTA FUNCAO */
   if (!g || v < 0 || v >= g->numVertices) return;
   int i, j;
+
+  // INICIALIZA OS VALORES DO ARRAY VALORES
   for(i = 0; i < g->numVertices; i++){
     valores[i] = 0;
   }
 
+
+  // Laços para calcular o grau de cada vertice
+  // Se o vertice algum relacionamento na matriz diferente de 0 se incrementa em valores[i]++, ja que o grau de um vertice é o numero de vizinho que determinado vertice possui
   for(i = 0; i < g->numVertices; i++) {
     for(j = 0; j < g->numVertices; j++) {
       if(g->matriz[i][j] != 0) {
@@ -467,7 +486,6 @@ void conexaoPreferencial(Grafo* g, int v, int* valores) {
 
 
 /* FIM DAS FUNCOES QUE DEVEM SER COMPLETADAS */
-
 
 /* Funcao que invoca e exibe os valores de cada uma das funcoes que voces
    devem implementar neste EP.
