@@ -301,11 +301,9 @@ void exibeArranjoInteiros(int* arranjo, int n){
   printf("\n\n");
 }
 
-
 /* FUNCOES QUE DEVEM SER COMPLETADAS PARA RESOLVER O EP.
    A DESCRICAO DE CADA FUNCAO ESTA NO ENUNCIADO DO EP.
    www.each.usp.br/digiampietri/ACH2024/ep1/ep1.pdf        */
-
 
 /* Funcao que calcula a homofilia entre o vertice v e os demais */
 void homofilia(Grafo* g, int v, int* valores) {
@@ -439,6 +437,7 @@ void proximidadeSocial(Grafo* g, int v, int* valores) {
   }
 
   // Fila para a busca em largura
+  // OBS: Os códigos da Estrutura de Dados Fila foram retirados de slides do professor Digiampietri a fim de implementação
   Fila f;
   inicializaFila(&f);
   insereFila(&f, v);
@@ -447,6 +446,7 @@ void proximidadeSocial(Grafo* g, int v, int* valores) {
   // While e for para busca e largura, se a fila nao estiver vazia quer dizer que ainda tem vertices para visitar
   // Ele então entra e traz o vertice atual, depois entre no for para visitar os seus vizinhos e inserir eles na fila
   // Esse processo acontece para todo vertice que tiver vizinho e quando a fila estiver vazia o programa termina.
+  
   while (!filaVazia(&f)) {
     int atual = excluiFila(&f);
 
