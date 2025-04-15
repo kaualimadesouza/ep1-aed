@@ -319,7 +319,7 @@ void homofilia(Grafo* g, int v, int* valores) {
     valores[i] = 0;
   }
 
-  // Laços para calcular a homofilia baseado nas características
+  // Laços para calcular a homofilia baseado nas características | Se o vertice v e o vertice i tiverem a mesma caracteristica em comum, ele incrementa em valores[i]++
   for(j = 0; j < g->numVertices; j++) {
     for(k = 0; k < g->numVertices; k++) {
       if(g->caracteristicas[v][k] != -1 && g->caracteristicas[v][k] == g->caracteristicas[j][k] ){
@@ -376,12 +376,14 @@ void influenciaSocial(Grafo* g, int v, int* valores) {
 
   for (i = 0; i < g->numVertices; i++) {
     for (k = 0; k < g->numVertices; k++) {
+      // Se a caracteristica for -1, ele ignora e continua o loop
       if (g->caracteristicas[i][k] == -1) {
         continue;
       }
 
       int taxaInfluencia = 0;
       // Trava o valor da caracteristica em g->caracteristicas[i][k] e compara com demais da coluna, se for igual ele soma na taxaInfluencia
+      // Depois ele soma a taxaInfluencia em valores[i] para dar o peso
       for (j = 0; j < g->numVertices; j++) {
         if (g->matriz[v][j] && g->caracteristicas[j][k] == g->caracteristicas[i][k]) {
           taxaInfluencia++;
@@ -407,6 +409,7 @@ void amizadesEmComum(Grafo* g, int v, int* valores) {
   }
 
   // Laços para calcular o número de amigos em comum entre o vertice v e os demais
+  // O laço percorre todos os relacionamentos da Matriz comparando se a linha selecionada tem os mesmos relacionamentos/amigos que o vertice v
   for(i = 0; i < g->numVertices; i++) {
     for(j = 0; j < g->numVertices; j++) {
       if(g->matriz[i][j] != 0 && g->matriz[i][j] == g->matriz[v][j] ) {
@@ -471,9 +474,9 @@ void conexaoPreferencial(Grafo* g, int v, int* valores) {
     valores[i] = 0;
   }
 
-
   // Laços para calcular o grau de cada vertice
-  // Se o vertice algum relacionamento na matriz diferente de 0 se incrementa em valores[i]++, ja que o grau de um vertice é o numero de vizinho que determinado vertice possui
+  // Se o vertice tem algum relacionamento na matriz diferente de 0 se incrementa em valores[i]++, ja que o grau de um vertice é o numero de vizinho que determinado vertice possui
+  // Então basta apenas somar todos os relacionamentos que o vertice possui e colocar no array valores[]
   for(i = 0; i < g->numVertices; i++) {
     for(j = 0; j < g->numVertices; j++) {
       if(g->matriz[i][j] != 0) {
