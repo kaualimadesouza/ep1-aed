@@ -319,7 +319,7 @@ void homofilia(Grafo* g, int v, int* valores) {
 
   // Laços para calcular a homofilia baseado nas características | Se o vertice v e o vertice i tiverem a mesma caracteristica em comum, ele incrementa em valores[i]++
   for(j = 0; j < g->numVertices; j++) {
-    for(k = 0; k < g->numVertices; k++) {
+    for(k = 0; k < NUM_CARACT; k++) {
       if(g->caracteristicas[v][k] != -1 && g->caracteristicas[v][k] == g->caracteristicas[j][k] ){
         valores[j]++; 
       }
@@ -334,28 +334,30 @@ void raridade(Grafo* g, int v, double* valores) {
   /* COMPLETE/IMPLEMENTE ESTA FUNCAO */
   if(!g || v < 0 || v >= g->numVertices) return;
 
-  int numCaracEmComum[5] = {0};
+  int numCaracEmComum[NUM_CARACT][5] = {0};
   int i, j, k, z;
 
   // INICIALIZA OS VALORES DO ARRAY VALORES
-  for(int i = 0; i < g->numVertices; i++){
+  for(i = 0; i < g->numVertices; i++){
     valores[i] = 0.0;
   }
     
   // Calcula a quantidade de vértices que possuem cada características de 1 a 5 e insere isso em um array
   for(i = 0; i < g->numVertices; i++) {
-    for(j = 0; j < g->numVertices; j++) {
+    for(j = 0; j < NUM_CARACT; j++) {
       if(g->caracteristicas[i][j] != -1) {
-        numCaracEmComum[g->caracteristicas[i][j] - 1]++;
+        numCaracEmComum[j][g->caracteristicas[i][j]]++;
       }
     }
   }
 
-  // Calcula os valores conforme a raridade das características | Pega o valor numeroe de caracteristica em comum  em numCaracEmComum e vai incrementando em valores[] até ter todas as raridades ponderadas
+  // Calcula os valores conforme a raridade das características | Pega o valor do numero de caracteristica em comum em numCaracEmComum e vai incrementando em valores[] até ter todas as raridades ponderadas
   for(j = 0; j < g->numVertices; j++) {
-    for(k = 0; k < g->numVertices; k++) {
+    for(k = 0; k < NUM_CARACT; k++) {
       if(g->caracteristicas[v][k] != -1 && g->caracteristicas[v][k] == g->caracteristicas[j][k]){
-        valores[j] += 1.0/numCaracEmComum[g->caracteristicas[j][k]-1]; 
+        if(numCaracEmComum[k][g->caracteristicas[v][k]] > 0) {
+          valores[j] += 1.0/numCaracEmComum[k][g->caracteristicas[v][k]]; 
+        }
       }
     } 
   }  
@@ -373,7 +375,7 @@ void influenciaSocial(Grafo* g, int v, int* valores) {
   }
 
   for (i = 0; i < g->numVertices; i++) {
-    for (k = 0; k < g->numVertices; k++) {
+    for (k = 0; k < NUM_CARACT; k++) {
       // Se a caracteristica for -1, ele ignora e continua o loop
       if (g->caracteristicas[i][k] == -1) {
         continue;
